@@ -1,0 +1,34 @@
+include ../_config
+- var page = pagelist['demo1'];
+
+doctype html
+html(lang="ja")
+  head
+    include ../include/_head
+
+  body
+    main.wrap
+      div#demo1
+        div.section
+          h2.section_ttl Mesh
+          p 材質
+          ul.sample_list
+            li.sample_item
+              p.sample_ttl MeshBasicMaterial
+              canvas#canvas1
+            li.sample_item
+              p.sample_ttl MeshNormalMaterial
+              canvas#canvas2
+            li.sample_item
+              p.sample_ttl MeshLambertMaterial
+              canvas#canvas3
+            li.sample_item
+              p.sample_ttl MeshPhongMaterial
+              canvas#canvas4
+            li.sample_item
+              p.sample_ttl MeshToonMaterial
+              canvas#canvas5
+            li.sample_item
+              p.sample_ttl MeshStandardMaterial
+              canvas#canvas6
+    include ../include/_footer
