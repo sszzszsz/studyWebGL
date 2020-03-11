@@ -7,9 +7,9 @@ $textColor: #333;
 html {
 }
 body {
-  font-family: 'Noto Sans JP',"ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "游ゴシック",
-    YuGothic, "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック", "MS PGothic",
-    sans-serif;
+  font-family: "Noto Sans JP", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro",
+    "游ゴシック", YuGothic, "メイリオ", Meiryo, Osaka, "ＭＳ Ｐゴシック",
+    "MS PGothic", sans-serif;
   font-size: 16px;
   color: $textColor;
   min-height: 100vh;
@@ -41,23 +41,33 @@ body {
       color: $textColor;
     }
   }
+
+  &_top {
+    margin-top: 50px;
+    text-align: center;
+    a {
+      display: inline-block;
+      color: #333;
+      text-decoration: none;
+    }
+  }
 }
-.section{
+.section {
   &_ttl {
     font-size: 20px;
   }
-
 }
+
 #demo1 {
   max-width: 1000px;
   margin: 0 auto;
   .section {
     overflow-x: hidden;
   }
-  .sample{
+  .sample {
     &_list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: 1fr 1fr 1fr;
       column-gap: 1em;
       row-gap: 30px;
       margin: 50px auto;
@@ -70,6 +80,37 @@ body {
     }
     &_ttl {
       margin-bottom: 10px;
+    }
+  }
+}
+
+#demo2 {
+  position: relative;
+
+  .canvas_wrap {
+    background: #fffbf6;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  #scr {
+    position: relative;
+    width: 100%;
+    height: 200vh;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    p {
+      font-size: 10vw;
+      text-align: center;
     }
   }
 }

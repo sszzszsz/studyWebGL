@@ -116,7 +116,7 @@ export default class Mesh {
 
     const geometry = new THREE.TorusGeometry(100, 40, 160, 100)
     // new THREE.MeshStandardMaterial()
-    const material = new THREE.MeshStandardMaterial({ color: 0xAD897C, roughness: 0 })
+    const material = new THREE.MeshStandardMaterial({ color: 0xAD897C, roughness: 0.25 })
     const mesh = new THREE.Mesh(geometry, material)
     mesh.rotation.y = 0
     mesh.rotation.x = 0

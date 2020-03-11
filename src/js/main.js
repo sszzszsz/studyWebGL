@@ -1,9 +1,10 @@
 import Mesh from './_mesh'
+import Interaction from './_interaction'
 
 window.addEventListener('load', init)
 function init () {
-  const demo1Falg = document.getElementById('canvas2')
-  if (typeof demo1Falg !== 'undefined') {
+  const demo1Falg = document.getElementById('demo1')
+  if (demo1Falg !== null) {
     const demo1 = new Mesh('canvas1')
     demo1.MeshBasicMaterial()
 
@@ -21,5 +22,11 @@ function init () {
 
     const demo6 = new Mesh('canvas6')
     demo6.MeshStandardMaterial()
+  }
+
+  const demo2Falg = document.getElementById('demo2')
+  if (demo2Falg !== null) {
+    const itr1 = new Interaction('canvas1')
+    itr1.init()
   }
 }
