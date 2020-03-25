@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-
+import { TweenMax } from 'gsap'
 export default class ImgEffect {
   constructor (param) {
     this.canvasId = param.id
@@ -59,23 +59,42 @@ export default class ImgEffect {
 
     // フラグメントシェーダ
     const fragmentSource = `
-    uniform vec2 resolution;
-    uniform vec2 imageResolution;
-    uniform sampler2D uTex;
-
     varying vec2 vUv;
 
+    #define PI 3.14159265359
+
+    uniform vec2 resolution;
+    uniform vec2 imageResolution;
+    uniform sampler2D texture1; // メインの画像
+    uniform sampler2D texture2; // エフェクト用の画像
+    uniform float dispFactor;
+
+    // uv座標を回転させる
+    mat2 rotate2d(float _angle){
+      return mat2(cos(_angle),-sin(_angle),
+                  sin(_angle),cos(_angle));
+                }
+
+
     void main(void) {
+    // windowサイズいっぱいに広げたPlaneのテクスチャにbackground-size:coverのような挙動をさせる
     vec2 ratio = vec2(
         min((resolution.x / resolution.y) / (imageResolution.x / imageResolution.y), 1.0),
         min((resolution.y / resolution.x) / (imageResolution.y / imageResolution.x), 1.0)
       );
-
     vec2 uv = vec2(
         vUv.x * ratio.x + (1.0 - ratio.x) * 0.5,
         vUv.y * ratio.y + (1.0 - ratio.y) * 0.5
       );
-    gl_FragColor = texture2D(uTex, uv);
+
+    // エフェクト用の画像の色情報（rgbaのvec4の四次元配列）
+    vec4 disp = texture2D(texture2, uv);
+
+    // uv座標にこのrgba情報のうちdisp.rとdisp.gを掛け算
+    vec2 calcPosition = uv + rotate2d(PI) * vec2(disp.r,disp.g) * (1.0 - dispFactor) * 0.1;
+
+    vec4 _texture = texture2D(texture1, calcPosition);
+    gl_FragColor = _texture;
     }
     `
 
@@ -94,9 +113,17 @@ export default class ImgEffect {
         type: 'v2',
         value: new THREE.Vector2(2560, 1440)
       },
-      uTex: { // テクスチャの読み込み
+      texture1: { // テクスチャの読み込み
         type: 't',
         value: this.texture
+      },
+      texture2: { // テクスチャの読み込み
+        type: 't',
+        value: new THREE.TextureLoader().load('../img/effect.jpeg')
+      },
+      dispFactor: {
+        type: 'f',
+        value: 1
       }
     }
 
@@ -145,9 +172,21 @@ export default class ImgEffect {
   ------------------------------ */
   setEventListner () {
     const self = this
-    window.addEventListener('resize', () => {
+    const canvas = document.getElementById(this.canvasId)
+    window.addEventListener('resize', function () {
       self.resizeWindow()
       console.log('resize')
+    })
+    canvas.addEventListener('mouseenter', function () {
+      console.log('mouseenter')
+      TweenMax.to(self.uniforms.dispFactor, 1, {
+        value: 0.8
+      })
+    })
+    canvas.addEventListener('mouseleave', function () {
+      TweenMax.to(self.uniforms.dispFactor, 1.5, {
+        value: 1
+      })
     })
   }
 }
