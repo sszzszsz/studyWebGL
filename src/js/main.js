@@ -1,7 +1,9 @@
 import Mesh from './_mesh'
 import Interaction from './_interaction'
+import ImgEffect from './_imgEffect'
 
 window.addEventListener('load', init)
+
 function init () {
   const demo1Falg = document.getElementById('demo1')
   if (demo1Falg !== null) {
@@ -28,5 +30,13 @@ function init () {
   if (demo2Falg !== null) {
     const itr1 = new Interaction('canvas1')
     itr1.init()
+  }
+
+  if (document.getElementById('demo3') !== null) {
+    const img01 = new ImgEffect({
+      id: 'canvas3',
+      path: '../img/test.jpg'
+    })
+    img01.init()
   }
 }
