@@ -1,0 +1,52 @@
+{
+  "pagelist":{
+    "path":"/pagelist.html",
+    "url": "pagelist.html",
+    "local_url": "pagelist.html",
+    "title": "画面一覧",
+    "page_title": "画面一覧",
+    "description": ""
+  },
+  "home":{
+    "path": "/index.html",
+    "url": "/",
+    "local_url": "/",
+    "title": "home",
+    "page_title": "トップページ",
+    "description": "トップページです",
+    "favicon": "favicon",
+    "dev_state": "テストアップ"
+  },
+  "demo1":{
+    "path": "/practice/demo1.html",
+    "url": "practice/demo1.html",
+    "local_url": "practice/demo1.html",
+    "title": "demo1",
+    "page_title": "下層ページ",
+    "description": "description"
+  },
+  "demo2":{
+    "path": "/practice/demo2.html",
+    "url": "practice/demo2.html",
+    "local_url": "practice/demo2.html",
+    "title": "demo2",
+    "page_title": "下層ページ",
+    "description": "description"
+  },
+  "demo3":{
+    "path": "/practice/demo3.html",
+    "url": "practice/demo3.html",
+    "local_url": "practice/demo3.html",
+    "title": "demo3",
+    "page_title": "下層ページ",
+    "description": "description"
+  },
+  "demo4":{
+    "path": "/practice/demo4.html",
+    "url": "practice/demo4.html",
+    "local_url": "practice/demo4.html",
+    "title": "demo4",
+    "page_title": "下層ページ",
+    "description": "description"
+  }
+}
