@@ -1,7 +1,7 @@
 module.exports = {
-  files: './public/**/*.css, ./public/**/*.js, ./public/**/*.html',
+  files: './dist/**/*.css, ./dist/**/*.js, ./dist/**/*.html',
   server: {
-    baseDir: './public/',
+    baseDir: './dist/',
     index: 'index.html'
   },
   online: true,

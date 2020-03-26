@@ -1,150 +1,33 @@
 const path = require('path')
+// ワイルドカードでファイルを探してきてくれる
 const globule = require('globule')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+
+// CSSを別ファイルにするプラグイン
+// const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // 公開フォルダ・作業フォルダのディレクトリ指定
 const dir = {
-  src: path.join(__dirname, 'src'),
-  public: path.join(__dirname, 'public')
-}
-
-// 対となる変換ファイルの拡張子指定
-const convertExtensions = {
-  pug: 'html',
-  scss: 'css',
-  ts: 'js',
-  js: 'js'
+  src: path.resolve(__dirname, 'src'),
+  public: path.resolve(__dirname, 'dist')
 }
 
 // development:開発, production:本番
 const mode = 'development'
 
-// エントリーポイントの格納先
-const entry = {
-  pug: {},
-  scss: {},
-  ts: {},
-  js: {}
-}
-const pagelist = require('./pug.config.js')
-
-Object.keys(convertExtensions).forEach(from => {
-  const to = convertExtensions[from]
-  globule.find([`**/*.${from}`, `!**/_*.${from}`], { cwd: dir.src }).forEach(filename => {
-    let _output = filename.replace(new RegExp(`.${from}$`, 'i'), `.${to}`)
-    const _source = path.join(dir.src, filename)
-    if (_output.indexOf('pug/') !== -1) {
-      _output = _output.replace('pug/', '')
-      entry.pug[_output] = _source
-    }
-    if (_output.indexOf('scss/') !== -1) {
-      _output = _output.replace('scss/', 'css/')
-      entry.scss[_output] = _source
-    }
-    if (_output.indexOf('js/') !== -1) {
-      _output = _output.replace('js/', 'js/')
-      entry.js[_output] = _source
-    }
-  })
-})
-
-/* ----------------------------------------------------------------------
-// pugファイルからhtmlファイルに出力
-// 1. pug.config.jsを読み込む（このファイルには、各ページの情報が記載されてます）
-// 2. pugファイルからhtmlファイルに出力する際、getPageListData関数を実行する
-// 3. getPageListData関数によって、pugファイルに各ページの情報を取り込む
-// 4. htmlファイルを出力する
----------------------------------------------------------------------- */
-function getPageListData () {
-  const _data = {}
-  for (let i = 0; i < pagelist.data.length; i++) {
-    _data[pagelist.data[i].name] = pagelist.data[i]
-  }
-  return _data
-}
-// scssファイルの設定
-const scssLoader = {
-  use: [
-    {
-      loader: 'css-loader',
-      options: {
-        url: false // ファイルパスの解決
-      }
-    },
-    {
-      loader: 'postcss-loader'
-    },
-    {
-      loader: 'sass-loader'
-    }
-  ]
-}
-const scssConfig = {
+const config = {
   mode: mode,
-  entry: entry.scss,
-  output: {
-    filename: '[name]',
-    publicPath: '/',
+  entry: path.resolve(__dirname, 'src/js/main.js'), // webpackがビルドを始める際の開始点となるjsファイル
+  output: { // bundleファイルをwebpackがどこにどのような名前で出力すればいいのかを指定
+    filename: 'main_bundle.js',
     path: dir.public
   },
   module: {
     rules: [
       {
-        test: /\.scss$/,
-        use: ExtractTextPlugin.extract(scssLoader)
-      }
-    ]
-  },
-  plugins: [new ExtractTextPlugin('[name]')],
-  cache: true
-}
-
-// pugファイルの設定
-const pugLoader = {
-  use: [
-    'html-loader',
-    {
-      loader: 'pug-html-loader',
-      options: {
-        pretty: true,
-        data: {
-          pagelist: getPageListData()
-        }
-      }
-    }
-  ]
-}
-const pugConfig = {
-  mode: mode,
-  entry: entry.pug,
-  output: {
-    filename: '[name]',
-    publicPath: '/',
-    path: dir.public
-  },
-  module: {
-    rules: [
-      {
-        test: /\.pug$/,
-        use: ExtractTextPlugin.extract(pugLoader)
-      }
-    ]
-  },
-  plugins: [new ExtractTextPlugin('[name]')],
-  cache: true
-}
-
-const es6Config = {
-  mode: mode,
-  entry: entry.js,
-  output: {
-    filename: '[name]',
-    publicPath: '/',
-    path: dir.public
-  },
-  module: {
-    rules: [
-      {
+        // ESlint
         enforce: 'pre',
         test: /\.js$/,
         exclude: /(node_modules|public)/,
@@ -154,7 +37,7 @@ const es6Config = {
         }
       },
       {
-        // 拡張子 .js の場合
+        // jsのコンパイル
         test: /\.js$/,
         use: [
           {
@@ -169,8 +52,102 @@ const es6Config = {
             }
           }
         ]
+      },
+      {
+        // scssファイルの設定
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              url: true // ファイルパスの解決
+            }
+          },
+          {
+            loader: 'postcss-loader'
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true
+            }
+          }
+        ]
+      },
+      {
+        test: /\.pug$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'pug-loader',
+            options: {
+              pretty: true,
+              root: path.resolve(__dirname, 'src/pug')
+            }
+          }
+        ]
+      },
+      {
+        // 画像を埋め込まず任意のフォルダに保存するF
+        test: /\.(gif|png|jpg|jpeg|eot|wof|woff|ttf|svg)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: './img/[name].[ext]',
+              outputPath: '/',
+              publicPath: '../img'
+            }
+          }
+        ]
       }
     ]
-  }
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'style.css'
+    }),
+    new HtmlWebpackPlugin({
+      // eslint-disable-next-line quotes
+      filename: `index.html`,
+      template: './src/pug/index.pug',
+      title: '',
+      data: require('./data.json')
+    })
+  ]
 }
-module.exports = [scssConfig, es6Config, pugConfig]
+
+// pugファイルの設定
+
+const documents = globule.find(
+  './src/pug/**/*.pug', {
+    ignore: [
+      './src/pug/**/_*.pug'
+    ]
+  }
+)
+
+documents.forEach((document) => {
+  const fileName = document.replace('./src/pug/', '').replace('.pug', '.html')
+  console.log('fileName', fileName)
+  console.log('document', document)
+  const json = require('./data.json')
+
+  Object.keys(json).forEach(function (key) {
+    if ('/' + fileName === json[key].path) {
+      console.log(json[key].title.replace(/"/g, ''))
+      config.plugins.push(
+        new HtmlWebpackPlugin({
+          filename: `${fileName}`,
+          template: document,
+          title: json[key].title,
+          description: json[key].description,
+          data: json[key]
+        })
+      )
+    }
+  })
+})
+
+module.exports = config
