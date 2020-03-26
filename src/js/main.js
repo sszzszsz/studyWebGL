@@ -1,6 +1,11 @@
+import '../scss/style.scss'
 import Mesh from './_mesh'
 import Interaction from './_interaction'
 import ImgEffect from './_imgEffect'
+// import GridToFullscreenEffect from './WebGLDistortionConfigurator/_GridToFullscreenEffect'
+
+import '../img/effect.jpeg'
+import '../img/test.jpg'
 
 window.addEventListener('load', init)
 
@@ -38,5 +43,21 @@ function init () {
       path: '../img/test.jpg'
     })
     img01.init()
+  }
+
+  if (document.getElementById('demo4') !== null) {
+    // console.log(GridToFullscreenEffect)
+    // const transitionEffect = new GridToFullscreenEffect(
+    //   document.getElementById('app'),
+    //   document.getElementById('itemsWrapper'),
+    //   {
+    //     duration: 1.5,
+    //     timing: { type: 'sameEnd', props: { latestStart: 0.25 } },
+    //     activation: { type: 'radial', props: { rows: 4 } },
+    //     transformation: { type: 'circle' },
+    //     easings: { toFullscreen: Quint.easeOut, toGrid: Quint.easeOut }
+    //   }
+    // )
+    // transitionEffect.init()
   }
 }

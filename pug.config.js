@@ -68,6 +68,18 @@ module.exports = {
       keywords: '',
       favicon: favicon,
       dev_state: 'テストアップ'
+    }, {
+      name: 'demo4',
+      url: url + 'practice/demo4.html',
+      local_url: local_url + 'practice/demo4.html',
+      title: title.page,
+      page_title: '下層ページ',
+      level: 1,
+      description: description.page,
+      keywords: '',
+      favicon: favicon,
+      dev_state: 'テストアップ'
     }
+
   ]
 }
