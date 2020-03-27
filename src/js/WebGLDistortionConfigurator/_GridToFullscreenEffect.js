@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import * as TweenLite from 'gsap/TweenLite'
+import { TweenMax } from 'gsap'
 /**
  * A grid items to fullscreen transition
  * @module GridToFullscreenEffect
@@ -265,7 +265,8 @@ export default class GridToFullscreenEffect {
   /**
     Initiates THREEJS objects and adds listeners to the items
    */
-  init () {
+  init() {
+    // レンダラー
     this.renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true
@@ -274,6 +275,7 @@ export default class GridToFullscreenEffect {
     this.renderer.setSize(window.innerWidth, window.innerHeight)
     this.container.appendChild(this.renderer.domElement)
 
+    // シーンとカメラ
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
       45,
@@ -285,13 +287,13 @@ export default class GridToFullscreenEffect {
     this.camera.lookAt = this.scene.position
 
     const viewSize = this.getViewSize()
+    const segments = 128
+    var geometry = new THREE.PlaneBufferGeometry(1, 1, segments, segments)
+
     this.uniforms.uViewSize.value = new THREE.Vector2(
       viewSize.width,
       viewSize.height
     )
-
-    const segments = 128
-    var geometry = new THREE.PlaneBufferGeometry(1, 1, segments, segments)
 
     const shaders = this.getShaders()
     var material = new THREE.ShaderMaterial({
@@ -303,6 +305,7 @@ export default class GridToFullscreenEffect {
     this.mesh = new THREE.Mesh(geometry, material)
     this.scene.add(this.mesh)
 
+    // risizeイベントの付与
     window.addEventListener('resize', this.onResize)
     if (this.options.scrollContainer) {
       this.options.scrollContainer.addEventListener('scroll', ev => {
@@ -412,7 +415,8 @@ export default class GridToFullscreenEffect {
     ) {
       this.uniforms.uSeed.value = Math.floor(Math.random() * 10000)
     }
-    this.tween = TweenLite.to(this.uniforms.uProgress, this.options.duration, {
+    this.tween = TweenMax.to(this.uniforms.uProgress, {
+      duration: this.options.duration,
       value: 0,
       ease: this.options.easings.toGrid,
       onUpdate: () => {
@@ -536,7 +540,8 @@ export default class GridToFullscreenEffect {
     if (this.options.randomizeSeed === 'tweenUnique') {
       this.uniforms.uSeed.value = Math.floor(Math.random() * 10000)
     }
-    this.tween = TweenLite.to(this.uniforms.uProgress, this.options.duration, {
+    this.tween = TweenMax.to(this.uniforms.uProgress, {
+      duration: this.options.duration,
       value: 1,
       ease: this.options.easings.toFullscreen,
       onUpdate: () => {
@@ -721,7 +726,7 @@ function getEaseFromString (easeString) {
   const dotIndex = easeString.indexOf('.')
   const name = easeString.substring(0, dotIndex)
   const type = easeString.substring(dotIndex + 1)
-  const easingTypes = window.com.greensock.easing[name]
+  const easingTypes = name
   if (!easingTypes) return Power0.easeNone
   const ease = easingTypes[type]
   if (!ease) return easingTypes.easeIn
@@ -1109,7 +1114,7 @@ const transformations = {
     `
   }
 }
-var vertexUniforms = `
+const vertexUniforms = `
     uniform float uProgress;
     uniform vec2 uScaleToViewSize;
     uniform vec2 uPlaneCenter;
@@ -1128,7 +1133,7 @@ var vertexUniforms = `
 
 `
 
-var cubicBeizer = `
+const cubicBeizer = `
 // Helper functions:
 float slopeFromT (float t, float A, float B, float C){
   float dtdx = 1.0/(3.0*A*t*t + 2.0*B*t + C);
@@ -1180,7 +1185,7 @@ float cubicBezier (float x, float a, float b, float c, float d){
   return y;
 }
 `
-var simplex = `
+const simplex = `
 vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
 
 float snoise(vec2 v){
@@ -1211,7 +1216,7 @@ float snoise(vec2 v){
 }
 `
 
-var quadraticBezier = `
+const quadraticBezier = `
 float quadraticBezier (float x, float a, float b){
   // adapted from BEZMATH.PS (1993)
   // by Don Lancaster, SYNERGETICS Inc.

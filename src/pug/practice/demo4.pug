@@ -11,7 +11,8 @@ html(lang="ja")
       #demo4
         .section.canvas_wrap
           #app
-          .itemsWrapper
-            img(src="../../img/1.jpg", alt="")
-
+          #itemsWrapper
+            div.item
+              img(src=require("../../img/1.jpg").default, alt="")
+              img(src=require("../../img/1_large.jpg").default, alt="")
     include ../include/_footer

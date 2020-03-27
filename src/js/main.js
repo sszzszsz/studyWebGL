@@ -2,7 +2,7 @@ import '../scss/style.scss'
 import Mesh from './_mesh'
 import Interaction from './_interaction'
 import ImgEffect from './_imgEffect'
-// import GridToFullscreenEffect from './WebGLDistortionConfigurator/_GridToFullscreenEffect'
+import GridToFullscreenEffect from './WebGLDistortionConfigurator/_GridToFullscreenEffect'
 
 import '../img/effect.jpeg'
 import '../img/test.jpg'
@@ -40,24 +40,50 @@ function init () {
   if (document.getElementById('demo3') !== null) {
     const img01 = new ImgEffect({
       id: 'canvas3',
-      path: '../img/test.jpg'
+      path: '/assets/img/test.jpg'
     })
     img01.init()
   }
 
   if (document.getElementById('demo4') !== null) {
-    // console.log(GridToFullscreenEffect)
-    // const transitionEffect = new GridToFullscreenEffect(
-    //   document.getElementById('app'),
-    //   document.getElementById('itemsWrapper'),
-    //   {
-    //     duration: 1.5,
-    //     timing: { type: 'sameEnd', props: { latestStart: 0.25 } },
-    //     activation: { type: 'radial', props: { rows: 4 } },
-    //     transformation: { type: 'circle' },
-    //     easings: { toFullscreen: Quint.easeOut, toGrid: Quint.easeOut }
-    //   }
-    // )
-    // transitionEffect.init()
+    console.log('demo4')
+    // インスタンス生成
+    const transitionEffect = new GridToFullscreenEffect(
+      document.getElementById('app'),
+      document.getElementById('itemsWrapper'),
+      {
+        duration: 1,
+        timing: { type: 'sections', props: { latestStart: 0 } },
+        activation: { type: 'radial', props: { onMouse: true } },
+        transformation: { type: 'circle' },
+        easings: { toFullscreen: 'Quint.easeOut', toGrid: 'Quint.easeOut' }
+      }
+    )
+
+    // 写真を配列にしてテクスチャ生成
+    const images = []
+    for (let i = 0, imageSet = {}; i < document.querySelectorAll('img').length; i++) {
+      const image = {
+        element: document.querySelectorAll('img')[i],
+        image: document.querySelectorAll('img')[i]
+      }
+      if (i % 2 === 0) {
+        imageSet = {}
+        imageSet.small = image
+      }
+      if (i % 2 === 1) {
+        imageSet.large = image
+        images.push(imageSet)
+      }
+    }
+
+    transitionEffect.createTextures(images)
+    transitionEffect.init()
+
+    // クリックしたらフルサイズにするか判定し実行
+    window.addEventListener('click', function () {
+      console.log('click')
+      if (transitionEffect.isFullscreen) transitionEffect.toGrid()
+    })
   }
 }

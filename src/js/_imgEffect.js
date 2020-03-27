@@ -119,7 +119,7 @@ export default class ImgEffect {
       },
       texture2: { // テクスチャの読み込み
         type: 't',
-        value: new THREE.TextureLoader().load('../img/effect.jpeg')
+        value: new THREE.TextureLoader().load('/assets/img/effect.jpeg')
       },
       dispFactor: {
         type: 'f',

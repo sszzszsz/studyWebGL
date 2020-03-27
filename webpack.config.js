@@ -95,9 +95,9 @@ const config = {
           {
             loader: 'file-loader',
             options: {
-              name: './img/[name].[ext]',
-              outputPath: '/',
-              publicPath: '../img'
+              name: '[name].[ext]',
+              outputPath: 'assets/img/',
+              publicPath: '/assets/img/'
             }
           }
         ]
@@ -119,7 +119,6 @@ const config = {
 }
 
 // pugファイルの設定
-
 const documents = globule.find(
   './src/pug/**/*.pug', {
     ignore: [
@@ -143,6 +142,8 @@ documents.forEach((document) => {
           template: document,
           title: json[key].title,
           description: json[key].description,
+          pageURL: json[key].path,
+          ogpImg: json[key].ogpImg,
           data: json[key]
         })
       )

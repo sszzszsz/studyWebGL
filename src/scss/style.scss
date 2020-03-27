@@ -17,6 +17,10 @@ body {
 
 .header {
   padding: 10px;
+  background: #000;
+  color: #fff;
+  font-size: 120%;
+  margin-bottom: 30px;
 }
 
 .footer {
@@ -33,12 +37,20 @@ body {
   &_list {
     max-width: 1000px;
     margin: 0 auto;
+    counter-reset: number 0;
   }
   &_panel {
     margin-bottom: 30px;
+    &:before {
+      display: inline-block;
+      padding-right: 1em;
+      counter-increment: number 1;
+      content: "◆No." counter(number);
+    }
 
     &_inr {
       color: $textColor;
+      display: block;
     }
   }
 
@@ -111,6 +123,32 @@ body {
     p {
       font-size: 10vw;
       text-align: center;
+    }
+  }
+}
+#demo4 {
+  .canvas_wrap {
+    position: relative;
+  }
+  #app {
+    top: 0;
+    left: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  #itemsWrapper {
+    position: absolute;
+    top: 0;
+
+    .item {
+      img {
+        &:last-child {
+          display: none;
+        }
+      }
     }
   }
 }
