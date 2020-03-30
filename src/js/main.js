@@ -54,9 +54,13 @@ function init () {
       {
         duration: 1,
         timing: { type: 'sections', props: { latestStart: 0 } },
-        activation: { type: 'radial', props: { onMouse: true } },
-        transformation: { type: 'circle' },
-        easings: { toFullscreen: 'Quint.easeOut', toGrid: 'Quint.easeOut' }
+        activation: { type: 'radial', props: { onMouse: false } },
+        transformation: {
+          type: 'fluid',
+          props: { amplitude: 2, frequency: 1.6, progressLimit: 0.1 }
+        },
+        randomizeSeed: 'tweenUnique',
+        easings: { toFullscreen: 'Strong.easeOut', toGrid: 'Strong.easeOut' }
       }
     )
 
@@ -81,9 +85,24 @@ function init () {
     transitionEffect.init()
 
     // クリックしたらフルサイズにするか判定し実行
-    window.addEventListener('click', function () {
+    const targetImg = document.querySelectorAll('.item img.sumb')
+    const canvasWrap = document.getElementById('canvasCont')
+
+    for (let i = 0; i < targetImg.length; i++) {
+      const target = targetImg[i]
+      target.addEventListener('click', function () {
+        console.log('click')
+        if (transitionEffect.isFullscreen) {
+          transitionEffect.toGrid()
+        }
+      })
+    }
+
+    canvasWrap.addEventListener('click', function () {
       console.log('click')
-      if (transitionEffect.isFullscreen) transitionEffect.toGrid()
+      if (transitionEffect.isFullscreen) {
+        transitionEffect.toGrid()
+      }
     })
   }
 }

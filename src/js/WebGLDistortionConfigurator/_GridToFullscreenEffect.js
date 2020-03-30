@@ -14,7 +14,8 @@ export default class GridToFullscreenEffect {
     @param {HTMLDivElement} itemsWrapper - Container of the grid items.
     @param {object} options - A configuration object.
    */
-  constructor (container, itemsWrapper, options = {}) {
+  constructor(container, itemsWrapper, options = {}) {
+    console.log('_GridToFullscreenEffect.js')
     this.container = container
     this.itemsWrapper = itemsWrapper
 
@@ -272,14 +273,14 @@ export default class GridToFullscreenEffect {
       antialias: true
     })
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight)
     this.container.appendChild(this.renderer.domElement)
 
     // シーンとカメラ
     this.scene = new THREE.Scene()
     this.camera = new THREE.PerspectiveCamera(
       45,
-      window.innerWidth / window.innerHeight,
+      this.container.clientWidth / this.container.clientHeight,
       0.1,
       10000
     )
@@ -403,11 +404,14 @@ export default class GridToFullscreenEffect {
   /*
     Tweens the plane to grid position if on fullscreen
   */
-  toGrid () {
+  toGrid() {
+    // Fullscreenになっていないか、アニメーション中だったら処理しない
     if (!this.isFullscreen || this.isAnimating) return
 
     this.isAnimating = true
-    if (this.options.onToGridStart) { this.options.onToGridStart({ index: this.currentImageIndex }) }
+    if (this.options.onToGridStart) {
+      this.options.onToGridStart({ index: this.currentImageIndex })
+    }
 
     if (
       this.options.randomizeSeed === 'InOutUnique' ||
@@ -420,7 +424,9 @@ export default class GridToFullscreenEffect {
       value: 0,
       ease: this.options.easings.toGrid,
       onUpdate: () => {
-        if (this.options.onProgressTween) { this.options.onProgressTween(this.uniforms.uProgress.value) }
+        if (this.options.onProgressTween) {
+          this.options.onProgressTween(this.uniforms.uProgress.value)
+        }
 
         this.render()
       },
@@ -430,6 +436,9 @@ export default class GridToFullscreenEffect {
         this.tween = null
         this.itemsWrapper.style.zIndex = 0
         this.container.style.zIndex = 0
+        const canvasWrap = document.getElementById('canvasCont')
+        canvasWrap.style.zIndex = 0
+        canvasWrap.style.opacity = 0
         this.render()
         if (this.options.onToGridFinish) {
           this.options.onToGridFinish({
@@ -470,8 +479,8 @@ export default class GridToFullscreenEffect {
       y: 1 - (ev.clientY - rect.top) / rect.height
     }
 
-    const xIndex = rect.left > window.innerWidth - (rect.left + rect.width)
-    const yIndex = rect.top > window.innerHeight - (rect.top + rect.height)
+    const xIndex = rect.left > this.container.clientWidth - (rect.left + rect.width)
+    const yIndex = rect.top > this.container.clientHeight - (rect.top + rect.height)
 
     const closestCorner = xIndex * 2 + yIndex
     this.uniforms.uClosestCorner.value = closestCorner
@@ -481,13 +490,13 @@ export default class GridToFullscreenEffect {
     )
 
     const viewSize = this.getViewSize()
-    const widthViewUnit = (rect.width * viewSize.width) / window.innerWidth
-    const heightViewUnit = (rect.height * viewSize.height) / window.innerHeight
+    const widthViewUnit = (rect.width * viewSize.width) / this.container.clientWidth
+    const heightViewUnit = (rect.height * viewSize.height) / this.container.clientHeight
     // x and y are based on top left of screen. While ThreeJs is on the center
     const xViewUnit =
-      (rect.left * viewSize.width) / window.innerWidth - viewSize.width / 2
+      (rect.left * viewSize.width) / this.container.clientWidth - viewSize.width / 2
     const yViewUnit =
-      (rect.top * viewSize.height) / window.innerHeight - viewSize.height / 2
+      (rect.top * viewSize.height) / this.container.clientHeight - viewSize.height / 2
 
     const geometry = this.mesh.geometry
     const mesh = this.mesh
@@ -521,8 +530,8 @@ export default class GridToFullscreenEffect {
   forceInitializePlane (index = 0) {
     this.currentImageIndex = index
     this.recalculateUniforms({
-      clientX: window.innerWidth / 2,
-      clientY: window.innerHeight
+      clientX: this.container.clientWidth / 2,
+      clientY: this.container.clientHeight
     })
     this.setCurrentTextures()
   }
@@ -534,8 +543,13 @@ export default class GridToFullscreenEffect {
 
     this.itemsWrapper.style.zIndex = 0
     this.container.style.zIndex = 2
+    const canvasWrap = document.getElementById('canvasCont')
+    canvasWrap.style.opacity = 1
+    canvasWrap.style.zIndex = 2
 
-    if (this.options.onToFullscreenStart) { this.options.onToFullscreenStart({ index: this.currentImageIndex }) }
+    if (this.options.onToFullscreenStart) {
+      this.options.onToFullscreenStart({ index: this.currentImageIndex })
+    }
 
     if (this.options.randomizeSeed === 'tweenUnique') {
       this.uniforms.uSeed.value = Math.floor(Math.random() * 10000)
@@ -545,7 +559,9 @@ export default class GridToFullscreenEffect {
       value: 1,
       ease: this.options.easings.toFullscreen,
       onUpdate: () => {
-        if (this.options.onProgressTween) { this.options.onProgressTween(this.uniforms.uProgress.value) }
+        if (this.options.onProgressTween) {
+          this.options.onProgressTween(this.uniforms.uProgress.value)
+        }
         this.render()
       },
       onComplete: () => {
@@ -592,9 +608,9 @@ export default class GridToFullscreenEffect {
     @param {Event} ev resize event
    */
   onResize (ev) {
-    this.camera.aspect = window.innerWidth / window.innerHeight
+    this.camera.aspect = this.container.clientWidth / this.container.clientHeight
     this.camera.updateProjectionMatrix()
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight)
 
     if (this.currentImageIndex > -1) {
       this.recalculateUniforms(ev)
